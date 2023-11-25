@@ -1,0 +1,603 @@
+<pre>
+  BIP: ?
+  Layer: Applications
+  Title: The Protocol of digital artifacts on dogecoin
+  Author: dao@dogewow.club
+  Status: Draft
+  Type: Informational
+  Created: 2023-05-08
+  License: PD
+</pre>
+
+== Introduction ==
+
+Dogecoin has no notion of stable, public accounts or identities. Addresses are
+single-use, and wallet accounts are private. Additionally, the use of addresses
+or public keys as stable identifiers precludes transfer of ownership or key
+rotation. However, the digital artifacts need individual identities and allowing 
+them to be tracked, transferred, and imbued with meaning. 
+
+== Cardinals ==
+
+The smallest indivisible unit in Dogecoin is defined as elon. One doge is equivalent to 100,000,000 elons.
+Every elon is serially numbered, starting at 0, in the order in which it is
+mined. These numbers are termed "cardinal numbers", or "cardinals", as they are
+cardinal numbers in the mathematical sense, giving the order of each elon in the
+totally supply. 
+
+The cardinal numbers of elons in transaction inputs are transferred to output
+elons in first-in-first-out order, according to the size and order of the
+transactions inputs and outputs.
+
+If a transaction is mined with the same transaction ID as outputs currently in
+the UTXO set,  the new transaction outputs displace the older UTXO set entries, 
+destroying the elons contained in any unspent outputs of the first transaction. 
+
+For the purposes of the assignment algorithm, the coinbase transaction is
+considered to have an implicit input equal in size to the subsidy, followed by
+an input for every fee-paying transaction in the block, in the order that those
+transactions appear in the block. The implicit subsidy input carries the
+block's newly created elons. The implicit fee inputs carry the elons that were
+paid as fees in the block's transactions.
+
+Underpaying the subsidy does not change the ordinal numbers of elons mined
+in subsequent blocks. Ordinals depend only on how many elons could have been
+mined, not how many actually were.
+
+Originally, a different payout scheme was envisioned with block rewards being
+determined by taking the maximum reward as per the block schedule and applying
+the result of a Mersenne Twister pseudo-random number generator to arrive at a
+number between 0 and the maximum reward.The cardinals has to take the maximun reward
+in this part of elons.
+
+This was changed starting with block 145,000, to prevent large pools from gaming
+the system and mining only high reward blocks. At the same time, the difficulty
+retargeting was also changed from four hours to once per block (every minute).
+The cardinals numbered from the block 145,000 match the actual.
+
+Elons are numbered and transferred with the following algorithm:
+
+<pre>
+# subsidy of block at given height
+const COIN = 100_000_000
+def subsidy(height):
+    if (height < 100000) {
+        return 1000000 * COIN;
+    } else if (height < 145000) {
+        return 500000 * COIN;
+    } else if (height < 200000) {
+        return 250000 * COIN;
+    } else if (height < 300000) {
+        return 125000 * COIN;
+    } else if (height < 400000) {
+        return  62500 * COIN;
+    } else if (height < 500000) {
+        return  31250 * COIN;
+    } else if (height < 600000) {
+        return  15625 * COIN;
+    } else {
+        return  10000 * COIN;
+    }
+
+
+# first cardinal of subsidy of block at given height
+def first_cardinal(height):
+  if (height < 145000)
+    return -1
+  start = 0
+  for height in range(height):
+    start += subsidy(height)
+  return start
+
+# assign cardinals in given block
+def assign_cardinals(block):
+  if (block.height < 145000)
+    return -1
+  first = first_cardinal(block.height)
+  last = first + subsidy(block.height)
+  coinbase_cardinals = list(range(first, last))
+
+  for transaction in block.transactions[1:]:
+    cardinals = []
+    for input in transaction.inputs:
+      cardinals.extend(input.cardinals)
+
+    for output in transaction.outputs:
+      output.cardinals = cardinals[:output.value]
+      del cardinals[:output.value]
+
+    coinbase_cardinals.extend(cardinals)
+
+  for output in block.transaction[0].outputs:
+    output.cardinals = coinbase_cardinals[:output.value]
+    del coinbase_cardinals[:output.value]
+</pre>
+
+Cardinal numbers are designed to be orthogonal to other aspects of the Bitcoin
+protocol, and can thus be used in conjunction with other layer one and layer
+applications, even ones that were not designed with cardinal numbers in mind.
+
+Cardinal elons can be secured using current and future script types. They can be
+held by single-signature wallets, multi-signature wallets, time-locked, and
+height-locked in all the usual ways.
+
+By assigning cardinal numbers to all elons without the need for an explicit
+creation step, the anonymity set of cardinal number users is maximized.
+
+Since a elon has an output that contains it, and an output has a public key that
+controls it, the owner of a elon can respond to challenges by signing messages
+using the address associated with the controlling UTXO. Additionally, a elon can
+change hands, or its private key can be rotated without a change of ownership,
+by transferring it to a new output.
+
+Cardinal require no changes to blocks, transactions, or network protocols, and
+can thus be immediately adopted, or ignored, without impacting existing users.
+
+== Digital Artifacts ==
+
+Inscriptions inscribe elons with arbitrary content, creating dogecoin-native digital artifacts, more commonly known as NFTs. Inscriptions do not require a sidechain or separate token.
+
+These inscribed elons can then be transferred using dogecoin transactions, sent to dogecoin addresses, and held in dogecoin UTXOs. These transactions, addresses, and UTXOs are normal dogecoin transactions, addresses, and UTXOS in all respects, with the exception that in order to send individual elons, transactions must control the order and value of inputs and outputs according to cardinal theory.
+
+The inscription content model is that of the web. An inscription consists of a content type, also known as a MIME type, and the content itself, which is a byte string. This allows inscription content to be returned from a web server, and for creating HTML inscriptions that use and remix the content of other inscriptions.
+
+Inscription content is entirely on-chain, stored in taproot script-path spend scripts. Taproot scripts have very few restrictions on their content, and additionally receive the witness discount, making inscription content storage relatively economical.
+
+Since taproot script spends can only be made from existing taproot outputs, inscriptions are made using a two-phase commit/reveal procedure. First, in the commit transaction, a taproot output committing to a script containing the inscription content is created. Second, in the reveal transaction, the output created by the commit transaction is spent, revealing the inscription content on-chain.
+
+Inscription content is serialized using data pushes within unexecuted conditionals, called "envelopes". Envelopes consist of an protocol, content type and content wrapping any number of data pushes. Because envelopes are effectively no-ops, they do not change the semantics of the script in which they are included, and can be combined with any other locking script.
+
+A text inscription containing the string "Hello, world!" is serialized as follows:
+
+<pre>
+Protocol:     "ord"
+Content type: "text/plain;charset=utf-8"
+Content:      "Hello, world!"
+</pre>
+
+An image inscription is serialized as follows:
+
+<pre>
+Protocol:     "ord"
+Content type: "image/gif"
+Content:      <gif file data>
+</pre>
+
+A video recording inscription is serialized as follows:
+
+<pre>
+Protocol:     "ord"
+Content type: "video/mp4"
+Content:      <mp4 file data>
+</pre>
+
+A sound recording inscription is serialized as follows:
+
+<pre>
+Protocol:     "ord"
+Content type: "audio/flac"
+Content:      <flac file data>
+</pre>
+
+You can inscription a ipfs link as follows:
+
+<pre>
+Protocol:     "ord"
+Content type: "application/ipfs"
+Content:      <the ipfs cid>
+</pre>
+
+You can register a elon name service as follows:
+
+<pre>
+Protocol:     "ord"
+Content type: "application/elns"
+Content:      "{"p":"elns","op":"reg","name":"example.elons"}"
+</pre>
+
+
+== DRC-20 ==
+
+Cardinal theory can facilitate fungibility on dogecoin
+
+<pre>
+ Create a drc-20 with the deploy function
+ Mint an amount of drc-20's with the mint function
+ Transfer an amount of drc-20's with the transfer function. 
+</pre>
+
+=== Deploy drc-20 ===
+
+Inscribe the deploy function to you ordinal compatible wallet with the desired drc-20 parameters set.
+It's a example of deploy script as following:
+<pre>
+{ 
+  "p": "drc-20",
+  "op": "deploy",
+  "tick": "wow",
+  "max": "1000000",
+  "lim": "100"
+}
+</pre>
+
+{| class="wikitable" style="margin:auto"
+|+ command parameter description 
+|-
+! Key !! Require !! Description
+|-
+| p || yes || Protocol: Helps other systems identify and process drc-20 events
+|-
+| op || yes || Operation: Type of event (Deploy, Mint, Transfer)
+|-
+| tick || yes || Ticker: letter identifier of the drc-20, equal to 3 or 4 characters
+|-
+| max || yes || Max supply: set max supply of the drc-20
+|-
+| lim || no || Mint limit: If letting users mint to themsleves, limit per cardinal
+|-
+| dec || no || Decimals: set decimal precision, default to 18
+|-
+| burn || no || burn some token 
+|-
+| func || no || specific rules such as mining rules, rewards rules ...
+|}
+
+=== Mint drc-20 ===
+
+Inscribe the mint function to your cardinal compatible wallet. Make sure the ticker matches either a) the drc-20 you deployed in step 1, or b) any drc-20 that has yet to reach its fully diluted supply. Also if the drc-20 has a mint limit, make sure not to surpass this.
+
+It's a example of mint script as following:
+<pre>
+{ 
+  "p": "drc-20",
+  "op": "mint",
+  "tick": "wow",
+  "amt": "100"
+}
+</pre>
+
+{| class="wikitable" style="margin:auto"
+|+ command parameter description 
+|-
+! Key !! Require !! Description
+|-
+| p || yes || Protocol: Helps other systems identify and process drc-20 events
+|-
+| op || yes || Operation: Type of event (Deploy, Mint, Transfer)
+|-
+| tick || yes || Ticker: letter identifier of the drc-20, equal to 3 or 4 characters
+|-
+| amt || yes || Amount to mint: States the amount of the drc-20 to mint. Has to be less than "lim" above if stated
+|}
+
+==== reindex and verify transfer mint from transaction  ====
+<pre>
+1  parse the inscription from transaction and confirm op is "mint", and get amountand drc20 type
+2  decode the first output address(mint address), and the amount divided by 1000000 and the result is mtimes
+3  decode the second output address(manager address), and the amount is greater than the 500000000 x mtimes
+4  the manager address is equal to D92uJjQ9eHUcv2GjJUgp6m58V8wYvGV2g9
+5  get the transaction of input txid, parse the first input address
+6  the input address is equal to mint address, and update the database
+</pre>
+
+it's the  pseudocode of reindex and verfiy transfer inscription
+<pre>
+fn reindex_mint(inscription, transaction, database)
+	let mint_addr = addr_from_pkscript(transaction.output[0].script_pubkey);
+	let mtimes = transaction.output[0]/1000000;
+	let manager_addr = addr_from_pkscript(transaction.output[1].script_pubkey);
+	let fee_amt = transaction.output[1].value;
+	let tx = get_transaction(transaction.input[0].previous_output.txid);
+	let addr = addr_from_sigscript(tx.input[0].script_sig);
+	
+	if mint_addr == addr && manager_addr == D92uJjQ9eHUcv2GjJUgp6m58V8wYvGV2g9 && fee_amt > mtimes * 50000000 {
+		// update database
+	}
+end
+</pre>
+=== Transfer drc-20 ===
+
+Inscribe the transfer function to your ordinal compatible wallet. Make sure the transfer function inscription information is valid before inscribing 
+
+It's a example of transfer script as following:
+<pre>
+{ 
+  "p": "drc-20",
+  "op": "transfer",
+  "tick": "wow",
+  "amt": "230"
+}
+</pre>
+
+{| class="wikitable" style="margin:auto"
+|+ command parameter description 
+|-
+! Key !! Require !! Description
+|-
+| p || yes || Protocol: Helps other systems identify and process drc-20 events
+|-
+| op || yes || Operation: Type of event (Deploy, Mint, Transfer)
+|-
+| tick || yes || Ticker: letter identifier of the drc-20, equal to 3 or 4 characters
+|-
+| amt || yes || Amount to transfer: States the amount of the drc-20 to transfer.
+|}
+
+==== reindex and verify transfer inscription from transaction  ====
+<pre>
+1  parse the inscription from transaction and confirm op is "transfer", and get amount and drc20 type
+2  make sure the number of input of transaction is one, and decode the first output which contain amount and address
+3  verify the output amount is 100000 and the address is valid, the address is the receiving address
+4  get the transaction of input txid, parse the first input address
+5  verify the address is valid, the address is the sending address
+6  the sending address send drc20 to the receiving address, and update the database
+</pre>
+
+it's the  pseudocode of reindex and verfiy transfer inscription
+<pre>
+fn reindex_transfer(inscription, transaction, database)
+	let amount = inscription.amount;
+	let drc20 = inscription.type;
+	let input_num = tx.input.len();
+    
+	if input_num == 1 {
+		let dst_addr = addr_from_pkscript(transaction.output[0].script_pubkey);
+		let value = transaction.output[0].value;
+		let manager_addr = addr_from_pkscript(transaction.output[0].script_pubkey);
+		if value == 1000000 && manager_addr == D92uJjQ9eHUcv2GjJUgp6m58V8wYvGV2g9 {
+			let tx = get_transaction(transaction.input[0].previous_output.txid);
+			let src_addr = addr_from_sigscript(tx.input[0].script_sig);
+			let drc_database = database.get(drc20);
+			drc_database[src_addr] = drc_database[src_addr] - amount;
+			drc_database[dst_addr] = drc_database[dst_addr] + amount;
+		}
+		
+	}
+end
+</pre>
+
+== DRC-DEX (draft plan) ==
+Exchange drc-20 using inscriptions. 
+
+<pre>
+ Create a drc-20 swap pairs
+ Add and remove the liquidity of swap pairs
+ Swap the drc-20 according swap pairs state
+</pre>
+
+=== Create drc20-paris ===
+Inscribe the drc20-paris function to you ordinal compatible wallet with the desired drc-20 parameters set.
+It's a example of create script as following:
+<pre>
+{ 
+  "p": "pair-v1",
+  "op": "create",
+  "tick0": "wow",
+  "tick1": "doge",
+  "addr": "Dxxxxxxxx"
+}
+</pre>
+
+{| class="wikitable" style="margin:auto"
+|+ command parameter description 
+|-
+! Key !! Require !! Description
+|-
+| p || yes || Protocol: Helps other systems identify and process drc-20 events
+|-
+| op || yes || Operation: Type of event (create, add, remove, swap)
+|-
+| tick || yes || Ticker: letter identifier of the two drc-20
+|-
+| addr || no || get reward of the pairs operation
+|}
+
+
+=== Add or remove the liquidity of pairs ===
+The user can add or remove the liquidity of pairs, and the liquidity of pairs provide the price. 
+Every add or remove operation inscribe inscriptions to the dogecoin chain.
+It's a example of add script as following:
+<pre>
+{ 
+  "p": "pair-v1",
+  "op": "add",
+  "tick0": "wow",
+  "tick1": "doge",
+  "amt0": "1000000", 
+  "amt1": "1000",
+  "addr": "Dxxxxxxxx"
+}
+</pre>
+
+It's the pseudocode of algorithm of add operation:
+<pre>
+fn add_liquidity(amt0, amt1, res0, res1, total_liquidity) 
+  const MINI_LIQUIDITY = 20;
+		
+  if total_liquidity == 0 {
+    let liquidity = sqrt(amt0 * amt1) 
+    if liquidity > MINI_LIQUIDITY {
+      liquidity = liqudity - MINI_LIQUIDITY
+    } else {
+      return None
+    }
+  } else {
+    let liquidity = Math.min(amt0 *total_liquidity / res0, amt1*total_liquidity / res1);
+  }
+
+  let res0 = reserve0 + amt0;
+  let res1 = reserve1 + amt1;
+  let total_liquidity = total_liquidity + liquidity
+  return(res0, res1, liqudity, totalSupply)
+end
+</pre>
+
+==== reindex and verify add liquidity inscription from transaction  ====
+<pre>
+1  parse the inscription from transaction and confirm op is "add", and get amount and drc20 type
+2  decode the first output which is the add liquidity address and the second address which is the manager address
+3  make sure the manager address is equal to D92uJjQ9eHUcv2GjJUgp6m58V8wYvGV2g9, and amount is 1000000
+3  get the transaction of input txid, parse the first input address
+4  make sure the input address is equal to the add liquidity address
+5  update the liquidity in database
+</pre>
+
+it's the  pseudocode of reindex and verfiy transfer inscription
+<pre>
+fn reindex_add_liquidity(inscription, transaction, database)
+	let (tick0, tick1, amt0, amt1) = (inscription.tick0, inscription.tick1, inscription.amt0, inscription.amt1);
+	let addr = addr_from_pkscript(transaction.output[0].script_pubkey);
+	let manager_addr = addr_from_pkscript(transaction.output[1].script_pubkey);
+    	if manager_addr == D92uJjQ9eHUcv2GjJUgp6m58V8wYvGV2g9 && transaction.output[1].value == 1000000 {
+		let tx = get_transaction(transaction.input[0].previous_output.txid);
+		let src_addr = addr_from_sigscript(tx.input[0].script_sig);
+		if src_addr == addr {
+			// udpate database ...
+		}
+	}
+	
+end
+</pre>
+
+It's a example of remove script as following:
+<pre>
+{ 
+  "p": "pair-v1",
+  "op": "remove",
+  "tick0": "wow",
+  "tick1": "doge",
+  "amt": "1000000", 
+  "addr": "Dxxxxxxxx"
+}
+</pre>
+
+It's the pseudocode of algorithm of remove operation:
+
+<pre>
+fn remove_liquidity(liq, res0, res1, total_liquidity) {
+  let amt0 = liquidity.mul(res0) / total_liquidity 
+  let amt1 = liquidity.mul(res1) / total_liquidity
+  if res0 > amt0 && res1 > amt1 {
+    res0 = res0 - amt0
+    res1 = res1 - amt1
+    let total_liquidity = total_liquidity - liquidity
+    return (amt0, amt1, res0, res1, totalSupply)
+  } else {
+    return None
+  }
+	
+}
+</pre>
+
+==== reindex and verify remove liquidity inscription from transaction  ====
+<pre>
+1  parse the inscription from transaction and confirm op is "remove", and get amount and drc20 type
+2  decode the first output which is the add liquidity address and the second address which is the manager address
+3  make sure the manager address is equal to D92uJjQ9eHUcv2GjJUgp6m58V8wYvGV2g9, and amount is 1000000
+4  get the transaction of input txid, parse the first input address
+5  make sure the input address is equal to the add liquidity address
+6  update the liquidity in database
+</pre>
+
+it's the  pseudocode of reindex and verfiy transfer inscription
+<pre>
+fn reindex_remove_liquidity(inscription, transaction, database)
+	let (tick0, tick1, amt0, amt1) = (inscription.tick0, inscription.tick1, inscription.amt0, inscription.amt1);
+	let addr = addr_from_pkscript(transaction.output[0].script_pubkey);
+	let manager_addr = addr_from_pkscript(transaction.output[1].script_pubkey);
+    	if manager_addr == D92uJjQ9eHUcv2GjJUgp6m58V8wYvGV2g9 && transaction.output[1].value == 1000000 {
+		let tx = get_transaction(transaction.input[0].previous_output.txid);
+		let src_addr = addr_from_sigscript(tx.input[0].script_sig);
+		if src_addr == addr {
+			// udpate database ...
+		}
+	}
+	
+end
+</pre>
+
+{| class="wikitable" style="margin:auto"
+|+ command parameter description 
+|-
+! Key !! Require !! Description
+|-
+| p || yes || Protocol: Helps other systems identify and process drc-20 events
+|-
+| op || yes || Operation: Type of event (create, add, remove, swap)
+|-
+| tick || yes || Ticker: letter identifier of the two drc-20
+|-
+| amt || yes || Amount: the amount of add or remove drc-20
+|-
+| addr || optional || add liquidity operation get reward of the pairs operation
+|}
+
+=== Swap the liquidity of pairs ===
+Any user can swap one drc-20 for another drc-20 using the drc-20 pairs.
+Every swap operation inscribe inscriptions to the dogecoin chain.
+It's a example of create script as following:
+<pre>
+{ 
+  "p": "pair-v1",
+  "op": "swap",
+  "tick0": "wow",
+  "tick1": "doge",
+  "amt0": "10", 
+  "amt1": "1",
+}
+</pre>
+
+It's the pseudocode of algorithm of swap operation:
+<pre>
+fn swap(amt_in, res0, res1) {
+  amt_q = amt_in * 97 / 100 
+  amt_s = amt_in * 99 / 100 
+	
+  amt_out = (amt_q * res1) / (res0 + amt_q)
+  if amt_out < res1 {
+    res0 = res0 + amt_s
+    res1 = res1 - amt_out
+    return (amt_out, res0, res1)
+  } else {
+    return None
+  }
+}
+end
+</pre>
+
+==== reindex and verify swap inscription from transaction  ====
+<pre>
+1  parse the inscription from transaction and confirm op is "swap", and get amount and drc20 type
+2  decode the first output which is the sending address and the second address which is the manager address
+3  get the transaction of input txid, parse the first input address
+4  make sure the input address is equal to the receiving address, and manager address is equal to D87Nj1x9H4oczq5Kmb1jxhxpcqx2vELkqh
+5  update the balance in database
+</pre>
+
+it's the  pseudocode of reindex and verfiy transfer inscription
+<pre>
+fn reindex_swap_liquidity(inscription, transaction, database)
+	let (tick0, tick1, amt0, amt1) = (inscription.tick0, inscription.tick1, inscription.amt0, inscription.amt1);
+	let src_addr = addr_from_pkscript(transaction.output[0].script_pubkey);
+	let manager_addr = addr_from_pkscript(transaction.output[1].script_pubkey);
+	let tx = get_transaction(transaction.input[0].previous_output.txid);
+	let addr = addr_from_sigscript(tx.input[0].script_sig);
+	if src_addr == addr && manager_addr == D87Nj1x9H4oczq5Kmb1jxhxpcqx2vELkqh {
+			// udpate database ...
+	}
+end
+</pre>
+
+{| class="wikitable" style="margin:auto"
+|+ command parameter description 
+|-
+! Key !! Require !! Description
+|-
+| p || yes || Protocol: Helps other systems identify and process drc-20 events
+|-
+| op || yes || Operation: Type of event (create, add, remove, swap)
+|-
+| tick || yes || Ticker: letter identifier of the two drc-20, user transfer from first drc-20 for second drc-20
+|-
+| amt || yes || Amount: the amount of swap drc-20, the user balance remove the first one of first drc-20 and get the second one of second drc-20
+|}
