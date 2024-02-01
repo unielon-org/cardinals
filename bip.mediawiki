@@ -610,4 +610,35 @@ end
 |}
 
 === Stake the liquidity of pairs ===
-Any user who add liquidity of pairs can stake their lp to get some reward. The operation inscribe inscriptinos to the dogecoin.
+Any user who add liquidity of pairs can stake their lp to get some reward. The operation inscribe inscriptinos to the dogecoin chain.
+It's a example of create script as following:
+<pre>
+{ 
+  "p": "pair-v1",
+  "op": "stake", ["unstake"]
+  "tick0": "wow",
+  "tick1": "doge",
+  "amt": "10", 
+}
+</pre>
+{| class="wikitable" style="margin:auto"
+|+ command parameter description 
+|-
+! Key !! Require !! Description
+|-
+| p || yes || Protocol: Helps other systems identify and process drc-20 events
+|-
+| op || yes || Operation: Type of event, stake or unstake
+|-
+| tick0 and tick1 || yes || Ticker: letter identifier of the two drc-20, user transfer from first drc-20 for second drc-20
+|-
+| amt || yes || Amount: the liquidity of the tick0-tick1 pair
+|}
+<pre>
+1  parse the inscription from transaction and confirm op is "stake", and get amount of liquidity of tick0-tick1 
+2  decode the address which send the stake transaction, and make sure it has enough balance of liquidty
+3  the user who stake the liquidity will get the reward at every block
+4  the reward comes from the fee, each transaction provides 1% of the transaction amount as a fee
+5  the reward amount increases with the staking time and staking amount
+6  Once unstaking, the user gets the reward and stops new rewards
+</pre>
