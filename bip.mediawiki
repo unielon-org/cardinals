@@ -608,3 +608,6 @@ end
 |-
 | amt || yes || Amount: the amount of swap drc-20, the user balance remove the first one of first drc-20 and get the second one of second drc-20
 |}
+
+=== Stake the liquidity of pairs ===
+Any user who add liquidity of pairs can stake their lp to get some reward. The operation inscribe inscriptinos to the dogecoin.
