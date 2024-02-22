@@ -615,7 +615,7 @@ It's a example of create script as following:
 <pre>
 { 
   "p": "pair-v1",
-  "op": "stake", ["unstake"]
+  "op": "stake", ["unstake", "getallreward"]
   "tick": "unix-doge", ["unix"]
   "amt": "10", 
 }
@@ -639,5 +639,6 @@ It's a example of create script as following:
 3  the user who stake the unix/wdoge liquidity or unix will get the reward at every block
 4  the reward comes from the fee, each transaction provides 1% of the transaction amount as a fee
 5  the reward amount increases with the staking time and staking amount
-6  Once unstaking, the user gets the reward and stops new rewards
+6  Once unstaking, the user stops the staking and new rewards
+7  Once getallreward, the user gets all reward and stops new rewards and remove the liquidity
 </pre>
