@@ -614,7 +614,7 @@ Any user who add liquidity of unix/wdoge pairs can stake their lp to get some re
 It's a example of create script as following:
 <pre>
 { 
-  "p": "pair-v1",
+  "p": "stake-v1",
   "op": "stake", ["unstake", "getallreward"]
   "tick": "unix-doge", ["unix"]
   "amt": "10", 
