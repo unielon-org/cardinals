@@ -642,3 +642,96 @@ It's a example of create script as following:
 6  Once unstaking, the user stops the staking and new rewards
 7  Once getallreward, the user gets all reward and stops new rewards and remove the liquidity
 </pre>
+
+== DRC-ORDER (draft plan) ==
+Order market is supported by inscription. 
+<pre>
+Markets are made up of makers and takers. The makers create buying or selling orders that aren’t carried out immediately.
+The people that buy or sell instantly are called takers. In other words, the takers fill the orders created by the makers.
+Therefore，order market includes three inscription, order create, order cancel, order trade.
+</pre>
+
+=== Create Order ===
+Makers can create a depending order at the price they expect. 
+Every order create operation inscribe inscriptions to the dogecoin chain.
+It's a example of create script as following:
+<pre>
+{ 
+  "p": "order-v1",
+  "op": "create",
+  "tick0": "wow",
+  "tick1": "doge",
+  "amt0": "10", 
+  "amt1": "1",
+}
+</pre>
+
+{| class="wikitable" style="margin:auto"
+|+ command parameter description 
+|-
+! Key !! Require !! Description
+|-
+| p || yes || Protocol: Helps other systems identify and process drc-20 events
+|-
+| op || yes || Operation: Type of event (create,)
+|-
+| tick0 || yes || the drc20 type makers sell
+|-
+| tick1 || yes || the drc20 type makers buy
+|-
+| amt0 || yes || the drc20 amount makers buy
+|-
+| amt1 || yes || the drc20 amount makers buy
+|}
+
+=== Cancel Order ===
+Makers can cancel a depending order at the amount they expect. 
+Every order cancel operation inscribe inscriptions to the dogecoin chain.
+It's a example of create script as following:
+<pre>
+{ 
+  "p": "order-v1",
+  "op": "cancel",
+  "exid": "xxxxxxxxxxxxxxxxx",
+  "amt0": "10",
+}
+</pre>
+{| class="wikitable" style="margin:auto"
+|+ command parameter description 
+|-
+! Key !! Require !! Description
+|-
+| p || yes || Protocol: Helps other systems identify and process drc-20 events
+|-
+| op || yes || Operation: Type of event (cancel)
+|-
+| exid || yes || the depending order id
+|-
+| amt0 || yes || the drc20 amount makers suppose to cancel
+|}
+
+=== Trade Order ===
+Takers can fill the orders created by the makers.
+Every order trade operation inscribe inscriptions to the dogecoin chain.
+It's a example of create script as following:
+<pre>
+{ 
+  "p": "order-v1",
+  "op": "trade",
+  "exid": "xxxxxxxxxxxxxxxxx",
+  "amt1": "10",
+}
+</pre>
+{| class="wikitable" style="margin:auto"
+|+ command parameter description 
+|-
+! Key !! Require !! Description
+|-
+| p || yes || Protocol: Helps other systems identify and process drc-20 events
+|-
+| op || yes || Operation: Type of event (trade)
+|-
+| exid || yes || the depending order id
+|-
+| amt1 || yes || the drc20 amount makers suppose to trade, it's the drc20 type makers buy
+|}
