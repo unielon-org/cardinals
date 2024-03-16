@@ -777,5 +777,5 @@ It's a example of create script as following:
 |-
 | amt1 || no || reserved
 |-
-| price || yes || the cost which the unit token0 costs, in the example, price 100000000 means 100000000 token0 costs 100000000 wdoge
+| price || yes || the amount of token1 which the unit token0 costs, in the example, price 100000000 means 100000000 token0 costs 100000000 wdoge
 |}
