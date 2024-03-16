@@ -745,7 +745,8 @@ Users mint coins at a specific price as a fee，and the total fee will fill into
 </pre>
 
 == deploy box ==
-Anyone deploy a box drc20 token. He/she can create a deploy a inscription. This inscription contains the token which will deploy and the token which provide liquidity. 
+Anyone deploy a box drc20 token. He/she can create a deploy a inscription. This inscription contains the token which will deploy and the token which provide liquidity. For example, 50% of the deployment amount will be used for user minting, while the remaining 50% will be automatically added to liquidity after minting is completed.
+
 It's a example of create script as following:
 <pre>
 { 
