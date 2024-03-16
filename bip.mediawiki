@@ -744,6 +744,8 @@ Anyone can deploy a box inscription, it speparate the total token into two parts
 Users mint coins at a specific price as a fee，and the total fee will fill into trading pool after the mining is completed.
 </pre>
 
+== deploy box ==
+Anyone deploy a box drc20 token. He/she can create a deploy a inscription. This inscription contains the token which will deploy and the token which provide liquidity. 
 It's a example of create script as following:
 <pre>
 { 
@@ -754,10 +756,10 @@ It's a example of create script as following:
   "max": "10000",
   "amt0": "5000", 
   "amt1": "0",
-  "price": "100000000",
+  "liqamt": "5000",
 }
 </pre>
-</pre>
+
 {| class="wikitable" style="margin:auto"
 |+ command parameter description 
 |-
@@ -777,5 +779,31 @@ It's a example of create script as following:
 |-
 | amt1 || no || reserved
 |-
-| price || yes || the amount of token1 which the unit token0 costs, in the example, price 100000000 means 100000000 token0 costs 100000000 wdoge
+| liqamt || yes || the amount of token1 which will fill in the pairs
+|}
+
+== mint box ==
+Anyone mint a box drc20 token. 
+It's a example of create script as following:
+<pre>
+{ 
+  "p": "box-v1",
+  "op": "mint",
+  "tick0": "unix",
+  "amt1": "10",
+}
+</pre>
+
+{| class="wikitable" style="margin:auto"
+|+ command parameter description 
+|-
+! Key !! Require !! Description
+|-
+| p || yes || Protocol: Helps other systems identify and process drc-20 events
+|-
+| op || yes || Operation: Type of event (mint)
+|-
+| tick0 || yes || the drc20 type which will be mint
+|-
+| amt1 || yes || the amount which pay tick1 for tick0 
 |}
