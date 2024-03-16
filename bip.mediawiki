@@ -735,3 +735,47 @@ It's a example of create script as following:
 |-
 | amt1 || yes || the drc20 amount makers suppose to trade, it's the drc20 type makers buy
 |}
+
+== DRC-BOX (draft plan) ==
+The protocol automatically generates a trading market when minting is completed. 
+So that the token has a sufficient trading depth at the beginning.
+<pre>
+Anyone can deploy a box inscription, it speparate the total token into two parts. Part of it is used for users to mint coins, and the other part is used as liquidity for the trading pool. 
+Users mint coins at a specific price as a fee，and the total fee will fill into trading pool after the mining is completed.
+</pre>
+
+It's a example of create script as following:
+<pre>
+{ 
+  "p": "box-v1",
+  "op": "deploy",
+  "tick0": "unix",
+  "tick1": "wdoge",
+  "max": "10000",
+  "amt0": "5000", 
+  "amt1": "0",
+  "price": "100000000",
+}
+</pre>
+</pre>
+{| class="wikitable" style="margin:auto"
+|+ command parameter description 
+|-
+! Key !! Require !! Description
+|-
+| p || yes || Protocol: Helps other systems identify and process drc-20 events
+|-
+| op || yes || Operation: Type of event (deploy)
+|-
+| tick0 || yes || the drc20 type which will be mint
+|-
+| tick1 || yes || the drc20 type for establishing trading pairs, it should be a token with consensus value, such as wdoge 
+|-
+| max || yes || the total amount of the deploying token 
+|-
+| amt0 || yes || the amount of the deploying token which reserved for mining(pre-sale tokens)
+|-
+| amt1 || no || reserved
+|-
+| price || yes || the cost which the unit token0 costs, in the example, price 100000000 means 100000000 token0 costs 100000000 wdoge
+|}
