@@ -281,10 +281,8 @@ It's a example of mint script as following:
 <pre>
 1  parse the inscription from transaction and confirm op is "mint", and get amountand drc20 type
 2  decode the first output address(mint address), and the amount divided by 1000000 and the result is mtimes
-3  decode the second output address(manager address), and the amount is greater than the 500000000 x mtimes
-4  the manager address is equal to D92uJjQ9eHUcv2GjJUgp6m58V8wYvGV2g9
-5  get the transaction of input txid, parse the first input address
-6  the input address is equal to mint address, and update the database
+3  get the transaction of input txid, parse the first input address
+4  the input address is equal to mint address, and update the database
 </pre>
 
 it's the  pseudocode of reindex and verfiy transfer inscription
@@ -292,12 +290,10 @@ it's the  pseudocode of reindex and verfiy transfer inscription
 fn reindex_mint(inscription, transaction, database)
 	let mint_addr = addr_from_pkscript(transaction.output[0].script_pubkey);
 	let mtimes = transaction.output[0]/1000000;
-	let manager_addr = addr_from_pkscript(transaction.output[1].script_pubkey);
-	let fee_amt = transaction.output[1].value;
 	let tx = get_transaction(transaction.input[0].previous_output.txid);
 	let addr = addr_from_sigscript(tx.input[0].script_sig);
 	
-	if mint_addr == addr && manager_addr == D92uJjQ9eHUcv2GjJUgp6m58V8wYvGV2g9 && fee_amt > mtimes * 50000000 {
+	if mint_addr == addr {
 		// update database
 	}
 end
@@ -758,6 +754,7 @@ It's a example of create script as following:
   "amt0": "5000", 
   "amt1": "0",
   "liqamt": "5000",
+  "liqblock": "5xxxxxx"
 }
 </pre>
 
@@ -781,6 +778,8 @@ It's a example of create script as following:
 | amt1 || no || reserved
 |-
 | liqamt || yes || the amount of token1 which will fill in the pairs
+|-
+| liqblock || yes || the ending block height of box drc20 pre-sale
 |}
 
 == mint box ==
