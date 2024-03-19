@@ -625,7 +625,7 @@ It's a example of create script as following:
 1  parse the inscription from transaction and confirm op is "stake", and get amount of liquidity of tick0-tick1 
 2  decode the address which send the stake transaction, and make sure it has enough balance of liquidty
 3  the user who stake the unix/wdoge liquidity or unix will get the reward at every block
-4  the reward comes from the fee, each transaction provides 1% of the transaction amount as a fee
+4  the reward comes from the fee
 5  the reward amount increases with the staking time and staking amount
 6  Once unstaking, the user stops the staking and new rewards
 7  Once getallreward, the user gets all reward and stops new rewards and remove the liquidity
