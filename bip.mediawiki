@@ -359,6 +359,32 @@ fn reindex_transfer(inscription, transaction, database)
 end
 </pre>
 
+== WDOGE ==
+
+WDOGE is a special kind of drc20. Its mint volume depends entirely on the user’s pledge amount. User can receive wdoge when he/she deposit dogecoin .
+The amount he/she withdraw is same with he/she deposit. Hence there are two operator of wdoge: withdraw and deposit.
+
+It's the examples of both scripts as following:
+
+<pre>
+{ 
+  "p": "wdoge",
+  "op": "deposit",
+  "tick": "WDOGE(WRAPPED-DOGE)",
+  "amt": "100"
+}
+</pre>
+
+<pre>
+{ 
+  "p": "pair-v1",
+  "op": "deposit",
+  "tick": "WDOGE(WRAPPED-DOGE)",
+  "amt": "100"
+}
+</pre>
+
+
 == DRC-DEX (draft plan) ==
 Exchange drc-20 using inscriptions. 
 
