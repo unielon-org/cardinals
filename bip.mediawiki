@@ -377,8 +377,8 @@ It's the examples of both scripts as following:
 
 <pre>
 { 
-  "p": "pair-v1",
-  "op": "deposit",
+  "p": "wdoge",
+  "op": "withdraw",
   "tick": "WDOGE(WRAPPED-DOGE)",
   "amt": "100"
 }
