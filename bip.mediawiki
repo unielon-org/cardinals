@@ -825,3 +825,72 @@ It's a example of create script as following:
 |-
 | amt1 || yes || the amount which pay tick1 for tick0 
 |}
+
+== DRC-CROSS (draft plan) ==
+
+Currently, there are already more than 100 types of inscribed assets on Bitcoin, Doge Chain and other chains.These assets are bound to their respective main chains, forming their own isolated island. This agreement will connect these islands
+
+=== Basic Process ===
+
+<pre>
+User transfers the inscription assets to the CrossChain address in source chain
+The CrossChain community confirm the cross chain operation
+User gets the inscription assets in destination chain
+</pre>
+
+=== CrossChain address ===
+
+<pre>
+Community participants invest assets to gain participation rights
+Generate an aggregate address based on the private keys of the parties
+The address is the CrossChain address 
+</pre>
+
+=== Address pairing === 
+
+<pre>
+Once the inscription sent by the user is received, the user's public key can be parsed
+Using this public key, you can generate the user's address on other main networks
+This address can only be unlocked by the user's private key
+</pre>
+
+=== Copycat Inscription === 
+
+The user links the inscription of chain A to chain B. In fact, the inscription of chain A does not exist in chain B. Hence, the inscription in chain B is the copycat of chain A. We define copycat inscrption as follows:
+
+<pre>
+{ 
+  "p": "cross-v1",
+  "op": "mint",
+  "tick": "unix",
+  "amt": "5000", 
+  "src": "dogecoin"
+}
+</pre>
+
+{| class="wikitable" style="margin:auto"
+|+ command parameter description 
+|-
+! Key !! Require !! Description
+|-
+| p || yes || Protocol: Helps other systems identify the process is cross inscrption
+|-
+| op || yes || Operation: Type of event (mint)/(transfer), Only the CrossChain address can send mint inscriptions
+|-
+| tick || yes || the drc20 type which will be mint
+|-
+| amt || yes || the amount which pay tick1 for tick
+|-
+| src || yes || the chain of this original inscription
+|}
+
+
+=== Example of Cross Chain ===
+
+It's a example of Cross-chain operation. User transfer some cardi in dogecoin inscription to bitcoin chain.
+
+<pre>
+User transfer some cardi to the CrossChain address which is released by crosschain Community
+The crosschain community confirms the crosschain operation, the decision-making process and decision results will be recorded on the Classzz mainnet
+After the verification is passed, the user will receive the corresponding cardi in bitcoin chain 
+</pre>
