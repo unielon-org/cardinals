@@ -894,3 +894,66 @@ User transfer some cardi to the CrossChain address which is released by crosscha
 The crosschain community confirms the crosschain operation, the decision-making process and decision results will be recorded on the Classzz mainnet
 After the verification is passed, the user will receive the corresponding cardi in bitcoin chain 
 </pre>
+
+== DRC-STAKE (draft plan) ==
+
+Anyone can publish a staking procotal which users get reward based on. It contains five inscriptions: create, cancel, stake, unstake and get reward.
+
+=== creation of drc-stake  ===
+
+It's a example of creation and deletion of the drc-stake
+
+<pre>
+{ 
+  "p": "stake-v2",
+  "op": "create",
+  "tick0": "unix",
+  "tick1": "wdoge"
+  "reward": "1000000", 
+  "eachreward": "100"
+}
+</pre>
+
+<pre>
+{ 
+  "p": "stake-v2",
+  "op": "cancel",
+  "stake_id": "asdfasdf"
+}
+</pre>
+
+The creation of drc-stake contains two kinds of drc20 token. User stakes the first token, and get second token as reward. When a stake contract is created, a unique stake ID will be assigned. 
+
+=== staking operation of drc-stake  ===
+
+It's a example of staking and unstaking of the drc-stake
+
+<pre>
+{ 
+  "p": "stake-v2",
+  "op": "stake",
+  "stake_id": "asdfasdf"
+  "amt": 10
+}
+</pre>
+
+<pre>
+{ 
+  "p": "stake-v2",
+  "op": "unstake",
+  "stake_id": "asdfasdf"
+  "amt": 10
+}
+</pre>
+
+Anyone who want to play the game can stake or unstake token.
+
+<pre>
+{ 
+  "p": "stake-v2",
+  "op": "getreward",
+  "stake_id": "asdfasdf"
+}
+</pre>
+
+Users can initiate operations at any time to receive rewards
