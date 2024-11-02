@@ -571,12 +571,11 @@ It's a example of create script as following:
 It's the pseudocode of algorithm of swap operation:
 <pre>
 fn swap(amt_in, res0, res1) {
-  amt_q = amt_in * 97 / 100 
-  amt_s = amt_in * 99 / 100 
+  amt_q = amt_in * 997 / 100 
 	
   amt_out = (amt_q * res1) / (res0 + amt_q)
   if amt_out < res1 {
-    res0 = res0 + amt_s
+    res0 = res0 + amt_in
     res1 = res1 - amt_out
     return (amt_out, res0, res1)
   } else {
